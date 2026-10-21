@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heimdall-Tracking</title>
+<style>
+:root {
+  --bg: #0b1120;
+  --panel: #141e30;
+  --line: #293750;
+  --blue: #42c8f5;
+  --gold: #e7bd71;
+  --text: #f1f5f9;
+  --muted: #9baac0;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+header {
+  padding: 24px;
+  border-bottom: 1px solid var(--line);
+  background: #101a2b;
+}
+.brand { color: var(--gold); font-size: 25px; font-weight: bold; }
+header p { color: var(--muted); margin-bottom: 0; }
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 14px 20px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+}
+nav button, .action {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 11px 14px;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+nav button.active, .action {
+  background: var(--blue);
+  color: #07111c;
+  border-color: var(--blue);
+  font-weight: bold;
+}
+main { max-width: 1050px; margin: auto; padding: 24px; }
+h2 { margin-top: 0; }
+.muted { color: var(--muted); line-height: 1.6; }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin: 22px 0;
+}
+.card, .panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+.number { color: var(--blue); font-size: 30px; font-weight: bold; }
+label { display: block; margin: 15px 0 7px; }
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #0b1424;
+  color: white;
+  font: inherit;
+}
+textarea { min-height: 90px; resize: vertical; }
+form .action { margin-top: 18px; }
+.item {
+  border: 1px solid var(--line);
+  padding: 15px;
+  border-radius: 9px;
+  margin: 12px 0;
+  overflow-wrap: anywhere;
+}
+.tag { color: var(--gold); font-size: 13px; }
+.notice {
+  border-left: 3px solid var(--gold);
+  padding: 12px;
+  background: #1c2432;
+  color: var(--muted);
+  line-height: 1.5;
+}
+[hidden] { display: none !important; }
+footer {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  border-top: 1px solid var(--line);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">HEIMDALL-TRACKING</div>
+  <p>Gestion des appareils et suivi des signalements</p>
+</header>
+
+<nav aria-label="Navigation principale">
+  <button class="active" data-page="home">Accueil</button>
+  <button data-page="devices">Appareils</button>
+  <button data-page="report">Perte ou vol</button>
+  <button data-page="cases">Signalements</button>
+</nav>
+
+<main>
+  <section id="home">
+    <h2>Tableau de bord</h2>
+    <p class="muted">
+      Bienvenue dans ton espace de gestion des téléphones.
+      Cette version est un prototype local.
+    </p>
+
+    <div class="cards">
+      <div class="card">
+        <p class="muted">Appareils enregistrés</p>
+        <div class="number" id="deviceCount">0</div>
+      </div>
+      <div class="card">
+        <p class="muted">Signalements reçus</p>
+        <div class="number" id="caseCount">0</div>
+      </div>
+      <div class="card">
+        <p class="muted">Signalements ouverts</p>
+        <div class="number" id="openCount">0</div>
+      </div>
+    </div>
+
+    <div class="notice">
+      Sécurité : utilise uniquement des appareils que tu possèdes
+      ou que tu es autorisé à gérer. La localisation réelle n'est
+      pas encore connectée.
+    </div>
+  </section>
+
+  <section id="devices" hidden>
+    <h2>Enregistrer un appareil</h2>
+    <p class="muted">
+      Pour cette première version, utilise des données fictives.
+    </p>
+
+    <form id="deviceForm" class="panel">
+      <label for="owner">Nom du propriétaire ou référence</label>
+      <input id="owner" required maxlength="80"
+        placeholder="Ex. Client HT-001">
+
+      <label for="brand">Marque</label>
+      <select id="brand" required>
+        <option value="">Choisir une marque</option>
+        <option>Apple</option>
+        <option>Samsung</option>
+        <option>Xiaomi</option>
+        <option>TECNO</option>
+        <option>Infinix</option>
+        <option>Google</option>
+        <option>Autre</option>
+      </select>
+
+      <label for="model">Modèle</label>
+      <input id="model" required maxlength="80"
+        placeholder="Ex. Smartphone modèle X">
+
+      <label for="serial">Référence interne (facultatif)</label>
+      <input id="serial" maxlength="60"
+        placeholder="Ex. APP-001">
+
+      <label for="status">Statut de l'appareil</label>
+      <select id="status">
+        <option>Autorisé</option>
+        <option>En maintenance</option>
+        <option>Perdu ou volé</option>
+      </select>
+
+      <button class="action" type="submit">
+        Enregistrer l'appareil
+      </button>
+    </form>
+
+    <h2 style="margin-top:30px">Liste des appareils</h2>
+    <label for="search">Rechercher un appareil</label>
+    <input id="search" placeholder="Marque, modèle ou référence">
+
+    <div id="deviceList" aria-live="polite"></div>
+  </section>
+
+  <section id="report" hidden>
+    <h2>Signaler une perte ou un vol</h2>
+    <p class="muted">
+      Le formulaire crée un dossier de démonstration sur cet appareil.
+      Il n'envoie pas encore de déclaration à une équipe.
+    </p>
+
+    <form id="reportForm" class="panel">
+      <label for="reporter">Nom ou référence du déclarant</label>
+      <input id="reporter" required maxlength="80">
+
+      <label for="lostBrand">Marque du téléphone</label>
+      <input id="lostBrand" required maxlength="60">
+
+      <label for="lostModel">Modèle du téléphone</label>
+      <input id="lostModel" required maxlength="80">
+
+      <label for="incident">Type de signalement</label>
+      <select id="incident">
+        <option>Perte</option>
+        <option>Vol présumé</option>
+      </select>
+
+      <label for="details">Circonstances (sans données sensibles)</label>
+      <textarea id="details" required maxlength="1000"
+        placeholder="Décris les circonstances du signalement"></textarea>
+
+      <button class="action" type="submit">
+        Créer le dossier
+      </button>
+    </form>
+  </section>
+
+  <section id="cases" hidden>
+    <h2>Suivi des signalements</h2>
+    <p class="muted">
+      Les dossiers ci-dessous sont uniquement stockés dans ce navigateur.
+    </p>
+    <div id="caseList" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer>
+  Heimdall-Tracking · Prototype de développement
+</footer>
+
+<script>
+"use strict";
+
+// Stockage local de démonstration uniquement.
+// Ne pas utiliser avec des données personnelles réelles.
+
+const devices = [];
+const casesList = [];
+let nextDevice = 1;
+let nextCase = 1;
+
+const $ = id => document.getElementById(id);
+
+function makeId(prefix, number) {
+  return prefix + "-" + String(number).padStart(4, "0");
+}
+
+function addText(parent, tag, value, className) {
+  const element = document.createElement(tag);
+  element.textContent = value;
+  if (className) element.className = className;
+  parent.appendChild(element);
+  return element;
+}
+
+function showPage(page) {
+  document.querySelectorAll("main section").forEach(section => {
+    section.hidden = section.id !== page;
+  });
+
+  document.querySelectorAll("nav button").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  if (page === "devices") renderDevices();
+  if (page === "cases") renderCases();
+}
+
+document.querySelectorAll("nav button").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+$("deviceForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const device = {
+    id: makeId("HD", nextDevice++),
+    owner: $("owner").value.trim(),
+    brand: $("brand").value,
+    model: $("model").value.trim(),
+    reference: $("serial").value.trim(),
+    status: $("status").value
+  };
+
+  devices.push(device);
+  event.target.reset();
+  updateDashboard();
+  renderDevices();
+  alert("Appareil ajouté : " + device.id);
+});
+
+function renderDevices() {
+  const list = $("deviceList");
+  list.replaceChildren();
+
+  const query = $("search").value.trim().toLowerCase();
+
+  const filtered = devices.filter(device =>
+    [device.id, device.owner, device.brand, device.model,
+      device.reference, device.status]
+      .some(value => value.toLowerCase().includes(query))
+  );
+
+  if (!filtered.length) {
+    addText(list, "p", "Aucun appareil correspondant.", "muted");
+  }
+
+  filtered.forEach(device => {
+    const item = document.createElement("article");
+    item.className = "item";
+    addText(item, "strong", device.brand + " " + device.model);
+    addText(item, "p", "Référence : " + device.id);
+    addText(item, "p", "Propriétaire : " + device.owner);
+    addText(item, "p", "Statut : " + device.status);
+    if (device.reference) {
+      addText(item, "p", "Référence interne : " + device.reference);
+    }
+    list.appendChild(item);
+  });
+}
+
+$("search").addEventListener("input", renderDevices);
+
+$("reportForm").addEventListener("submit", event => {
+  event.preventDefault();
+
+  const report = {
+    id: makeId("HT", nextCase++),
+    reporter: $("reporter").value.trim(),
+    brand: $("lostBrand").value.trim(),
+    model: $("lostModel").value.trim(),
+    incident: $("incident").value,
+    details: $("details").value.trim(),
+    status: "À examiner"
+  };
+
+  casesList.push(report);
+  event.target.reset();
+  updateDashboard();
+  renderCases();
+  alert("Dossier de démonstration créé : " + report.id);
+});
+
+function renderCases() {
+  const list = $("caseList");
+  list.replaceChildren();
+
+  if (!casesList.length) {
+    addText(list, "p", "Aucun signalement enregistré.", "muted");
+  }
+
+  casesList.forEach(report => {
+    const item = document.createElement("article");
+    item.className = "item";
+    addText(item, "strong", report.id + " · " + report.incident);
+    addText(item, "p", "Téléphone : " + report.brand + " " + report.model);
+    addText(item, "p", "Déclarant : " + report.reporter);
+    addText(item, "p", "Statut : " + report.status, "tag");
+    addText(item, "p", "Circonstances : " + report.details);
+    list.appendChild(item);
+  });
+}
+
+function updateDashboard() {
+  $("deviceCount").textContent = devices.length;
+  $("caseCount").textContent = casesList.length;
+  $("openCount").textContent =
+    casesList.filter(report => report.status === "À examiner").length;
+}
+
+updateDashboard();
+</script>
+</body>
+</html>
